@@ -9,6 +9,7 @@ import { Navigation } from "@/components/Navigation";
 import Dashboard from "./pages/Dashboard";
 import Goals from "./pages/Goals";
 import CreateGoal from "./pages/CreateGoal";
+import GoalManagement from "./pages/GoalManagement";
 import Organization from "./pages/Organization";
 import Analytics from "./pages/Analytics";
 import NotFound from "./pages/NotFound";
@@ -38,14 +39,15 @@ const App = () => {
         <BrowserRouter>
           <div className="min-h-screen bg-background">
             <Navigation />
-            <Routes>
-              <Route path="/" element={<Dashboard />} />
-              <Route path="/goals" element={<Goals />} />
-              <Route path="/goals/new" element={<CreateGoal />} />
-              <Route path="/organization" element={<Organization />} />
-              <Route path="/analytics" element={<Analytics />} />
-              <Route path="*" element={<NotFound />} />
-            </Routes>
+        <Routes>
+          <Route path="/" element={<Dashboard />} />
+          <Route path="/goals" element={<Goals />} />
+          <Route path="/goals/new" element={<CreateGoal />} />
+          <Route path="/goals/:goalId/manage" element={<GoalManagement />} />
+          <Route path="/organization" element={<Organization />} />
+          <Route path="/analytics" element={<Analytics />} />
+          <Route path="*" element={<NotFound />} />
+        </Routes>
           </div>
         </BrowserRouter>
       </TooltipProvider>

@@ -202,6 +202,58 @@ export const seedGoals: Goal[] = [
     status: 'ACTIVE',
     createdAt: '2024-01-01T00:00:00.000Z',
     updatedAt: '2024-01-01T00:00:00.000Z',
+    plans: [
+      {
+        id: 'plan-1',
+        goalId: 'goal-1',
+        title: 'Expansión a mercados LATAM',
+        description: 'Establecer operaciones comerciales en México, Colombia y Chile para Q2-Q3',
+        dueDate: '2024-09-30T23:59:59.999Z',
+        status: 'IN_PROGRESS',
+        priority: 'HIGH',
+        assignedTo: 'user-3',
+        createdAt: '2024-01-15T00:00:00.000Z',
+        updatedAt: '2024-03-01T00:00:00.000Z'
+      },
+      {
+        id: 'plan-2',
+        goalId: 'goal-1',
+        title: 'Lanzamiento línea premium',
+        description: 'Desarrollar y lanzar nueva línea de productos premium con margen 40% superior',
+        dueDate: '2024-08-31T23:59:59.999Z',
+        status: 'PENDING',
+        priority: 'MEDIUM',
+        assignedTo: 'user-2',
+        createdAt: '2024-01-15T00:00:00.000Z',
+        updatedAt: '2024-01-15T00:00:00.000Z'
+      }
+    ],
+    reviews: [
+      {
+        id: 'review-1',
+        goalId: 'goal-1',
+        reviewDate: '2024-03-31T00:00:00.000Z',
+        progress: 35,
+        status: 'ON_TRACK',
+        achievements: [
+          'Completado estudio de mercado para LATAM',
+          'Establecido equipo de expansión internacional',  
+          'Incremento 8% en ingresos Q1 vs objetivo 6.25%'
+        ],
+        challenges: [
+          'Regulaciones más complejas en Colombia',
+          'Competencia local fuerte en México'
+        ],
+        nextActions: [
+          'Finalizar trámites legales en Colombia',
+          'Iniciar campaña de marca en México',
+          'Acelerar desarrollo de línea premium'
+        ],
+        reviewerUserId: 'user-2',
+        notes: 'Progreso favorable pero necesario ajustar timeline para Colombia. Considerar partnerships locales.',
+        createdAt: '2024-03-31T15:00:00.000Z'
+      }
+    ]
   },
   {
     id: 'goal-2',

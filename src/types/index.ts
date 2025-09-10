@@ -46,6 +46,35 @@ export type Goal = {
   status: GoalStatus;
   createdAt: string;
   updatedAt: string;
+  plans?: GoalPlan[];
+  reviews?: GoalReview[];
+};
+
+export type GoalPlan = {
+  id: string;
+  goalId: string;
+  title: string;
+  description: string;
+  dueDate: string;
+  status: "PENDING" | "IN_PROGRESS" | "COMPLETED" | "BLOCKED";
+  priority: "LOW" | "MEDIUM" | "HIGH" | "CRITICAL";
+  assignedTo?: string;
+  createdAt: string;
+  updatedAt: string;
+};
+
+export type GoalReview = {
+  id: string;
+  goalId: string;
+  reviewDate: string;
+  progress: number; // 0-100
+  status: "ON_TRACK" | "AT_RISK" | "BEHIND" | "AHEAD";
+  achievements: string[];
+  challenges: string[];
+  nextActions: string[];
+  reviewerUserId: string;
+  notes?: string;
+  createdAt: string;
 };
 
 // SMART validation types

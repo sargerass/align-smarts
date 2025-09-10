@@ -294,9 +294,14 @@ export default function Goals() {
                       </div>
                     </div>
                     
-                    <Button asChild variant="outline" size="sm">
-                      <Link to={`/goals/${goal.id}`}>Ver detalle</Link>
-                    </Button>
+                    <div className="flex gap-2">
+                      <Button asChild variant="outline" size="sm">
+                        <Link to={`/goals/${goal.id}`}>Ver detalle</Link>
+                      </Button>
+                      <Button asChild variant="outline" size="sm">
+                        <Link to={`/goals/${goal.id}/manage`}>Gestionar</Link>
+                      </Button>
+                    </div>
                   </div>
                 </CardContent>
               </Card>
