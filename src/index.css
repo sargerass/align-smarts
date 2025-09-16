@@ -8,7 +8,7 @@ All colors MUST be HSL.
 
 @layer base {
   :root {
-    --background: 0 0% 98%;
+    --background: 0 0% 100%;
     --foreground: 0 0% 0%;
 
     --card: 0 0% 100%;
@@ -17,23 +17,23 @@ All colors MUST be HSL.
     --popover: 0 0% 100%;
     --popover-foreground: 0 0% 0%;
 
-    --primary: 45 100% 52%;
-    --primary-foreground: 0 0% 0%;
+    --primary: 277 100% 40%;
+    --primary-foreground: 0 0% 100%;
 
-    --secondary: 45 20% 95%;
+    --secondary: 277 20% 95%;
     --secondary-foreground: 0 0% 0%;
 
-    --muted: 45 15% 93%;
-    --muted-foreground: 0 0% 40%;
+    --muted: 0 0% 95%;
+    --muted-foreground: 0 0% 45%;
 
-    --accent: 45 100% 52%;
-    --accent-foreground: 0 0% 0%;
+    --accent: 277 100% 40%;
+    --accent-foreground: 0 0% 100%;
 
     /* Corporate brand colors */
-    --brand-gold: 45 100% 52%;
-    --brand-black: 0 0% 0%;
-    --brand-light-gold: 45 80% 85%;
-    --brand-dark-gold: 45 100% 35%;
+    --brand-purple: 277 100% 40%;
+    --brand-light-purple: 277 50% 95%;
+    --brand-dark-purple: 277 100% 30%;
+    --brand-white: 0 0% 100%;
 
     /* Status colors */
     --success: 142 76% 36%;
@@ -58,21 +58,21 @@ All colors MUST be HSL.
 
     --radius: 0.5rem;
 
-    --sidebar-background: 0 0% 98%;
+    --sidebar-background: 0 0% 97%;
 
-    --sidebar-foreground: 240 5.3% 26.1%;
+    --sidebar-foreground: 0 0% 45%;
 
-    --sidebar-primary: 240 5.9% 10%;
+    --sidebar-primary: 277 100% 40%;
 
-    --sidebar-primary-foreground: 0 0% 98%;
+    --sidebar-primary-foreground: 0 0% 100%;
 
-    --sidebar-accent: 240 4.8% 95.9%;
+    --sidebar-accent: 0 0% 92%;
 
-    --sidebar-accent-foreground: 240 5.9% 10%;
+    --sidebar-accent-foreground: 0 0% 15%;
 
-    --sidebar-border: 220 13% 91%;
+    --sidebar-border: 0 0% 90%;
 
-    --sidebar-ring: 217.2 91.2% 59.8%;
+    --sidebar-ring: 277 100% 40%;
   }
 
   .dark {
@@ -85,8 +85,8 @@ All colors MUST be HSL.
     --popover: 0 0% 8%;
     --popover-foreground: 0 0% 98%;
 
-    --primary: 45 100% 52%;
-    --primary-foreground: 0 0% 0%;
+    --primary: 277 100% 50%;
+    --primary-foreground: 0 0% 100%;
 
     --secondary: 0 0% 12%;
     --secondary-foreground: 0 0% 98%;
@@ -94,14 +94,14 @@ All colors MUST be HSL.
     --muted: 0 0% 12%;
     --muted-foreground: 0 0% 60%;
 
-    --accent: 45 100% 52%;
-    --accent-foreground: 0 0% 0%;
+    --accent: 277 100% 50%;
+    --accent-foreground: 0 0% 100%;
 
     /* Corporate brand colors for dark mode */
-    --brand-gold: 45 100% 52%;
-    --brand-black: 0 0% 0%;
-    --brand-light-gold: 45 50% 25%;
-    --brand-dark-gold: 45 100% 35%;
+    --brand-purple: 277 100% 50%;
+    --brand-light-purple: 277 30% 20%;
+    --brand-dark-purple: 277 100% 30%;
+    --brand-white: 0 0% 100%;
 
     --destructive: 0 62.8% 30.6%;
     --destructive-foreground: 210 40% 98%;

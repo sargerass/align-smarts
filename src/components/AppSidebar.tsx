@@ -52,15 +52,15 @@ export function AppSidebar() {
 
   return (
     <Sidebar className="border-r">
-      <SidebarHeader className="border-b">
-        <Link to="/" className="flex items-center gap-3 px-2 py-3">
-          <div className="w-8 h-8 bg-brand-gold rounded-lg flex items-center justify-center flex-shrink-0">
-            <span className="text-brand-black font-bold text-lg">A</span>
+      <SidebarHeader className="border-b p-4">
+        <Link to="/" className="flex items-center gap-3">
+          <div className="w-10 h-10 bg-brand-purple rounded-full flex items-center justify-center flex-shrink-0">
+            <span className="text-brand-white font-bold text-lg">A</span>
           </div>
           {!isCollapsed && (
             <div className="min-w-0">
-              <h1 className="font-bold text-base text-foreground truncate">Acelera Corp</h1>
-              <p className="text-xs text-muted-foreground truncate">SMART Goals</p>
+              <h1 className="font-bold text-base text-foreground truncate">Acelera</h1>
+              <p className="text-xs text-muted-foreground truncate">guillermo.asto@acelera.io</p>
             </div>
           )}
         </Link>
@@ -103,17 +103,18 @@ export function AppSidebar() {
                   size="lg"
                   className="data-[state=open]:bg-sidebar-accent data-[state=open]:text-sidebar-accent-foreground"
                 >
-                  <Avatar className="h-8 w-8 rounded-lg">
-                    <AvatarFallback className="rounded-lg bg-brand-gold text-brand-black font-semibold">
+                  <Avatar className="h-8 w-8 rounded-full">
+                    <AvatarFallback className="rounded-full bg-brand-purple text-brand-white font-semibold">
                       {currentUser?.name?.split(' ').map(n => n[0]).join('')}
                     </AvatarFallback>
                   </Avatar>
                   {!isCollapsed && (
                     <div className="grid flex-1 text-left text-sm leading-tight">
                       <span className="truncate font-semibold">{currentUser?.name}</span>
-                      <Badge variant="secondary" className="text-xs w-fit">
-                        {currentUser?.role}
-                      </Badge>
+                      <div className="flex items-center gap-1">
+                        <div className="w-2 h-2 bg-red-500 rounded-full"></div>
+                        <div className="w-2 h-2 bg-orange-500 rounded-full"></div>
+                      </div>
                     </div>
                   )}
                   {!isCollapsed && <ChevronUp className="ml-auto size-4" />}

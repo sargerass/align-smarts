@@ -48,10 +48,10 @@ export default {
           foreground: "hsl(var(--card-foreground))",
         },
         brand: {
-          gold: "hsl(var(--brand-gold))",
-          black: "hsl(var(--brand-black))",
-          "light-gold": "hsl(var(--brand-light-gold))",
-          "dark-gold": "hsl(var(--brand-dark-gold))",
+          purple: "hsl(var(--brand-purple))",
+          "light-purple": "hsl(var(--brand-light-purple))",
+          "dark-purple": "hsl(var(--brand-dark-purple))",
+          white: "hsl(var(--brand-white))",
         },
         success: {
           DEFAULT: "hsl(var(--success))",
