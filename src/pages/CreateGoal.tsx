@@ -52,56 +52,53 @@ export default function CreateGoal() {
   const userOrgUnit = currentUser ? getOrgUnitById(currentUser.orgUnitId) : null;
   const parentGoals = currentUser ? getParentGoals(currentUser.orgUnitId) : [];
 
-  // Real-time AI validation
-  useEffect(() => {
-    const subscription = form.watch(async (value) => {
-      if (!value.title || !value.description || value.title.length < 5) {
-        setFeedback(undefined);
-        return;
-      }
+  const generateFeedback = async () => {
+    const value = form.getValues();
 
-      const currentValues = JSON.stringify({ 
-        title: value.title, 
-        description: value.description,
-        metrics,
-        tags: selectedTags,
-        parentAlignments 
-      });
+    if (!value.title || !value.description || value.title.length < 5) {
+      setFeedback(undefined);
+      return;
+    }
 
-      if (currentValues === lastValidation) return;
-      
-      setLastValidation(currentValues);
-      setIsValidating(true);
-
-      try {
-        const tempGoal: Goal = {
-          id: 'temp',
-          orgUnitId: currentUser!.orgUnitId,
-          title: value.title || '',
-          description: value.description || '',
-          ownerUserId: currentUser!.id,
-          period: 'TRIMESTRAL',
-          startDate: new Date().toISOString(),
-          endDate: new Date(Date.now() + 90 * 24 * 60 * 60 * 1000).toISOString(),
-          metrics: metrics.filter(m => m.name.trim() !== ''),
-          tags: selectedTags,
-          parentGoalAlignments: parentAlignments,
-          status: 'DRAFT',
-          createdAt: new Date().toISOString(),
-          updatedAt: new Date().toISOString(),
-        };
-
-        const aiFeedback = await simulateAIValidation(tempGoal);
-        setFeedback(aiFeedback);
-      } catch (error) {
-        console.error('Validation error:', error);
-      } finally {
-        setIsValidating(false);
-      }
+    const currentValues = JSON.stringify({
+      title: value.title,
+      description: value.description,
+      metrics,
+      tags: selectedTags,
+      parentAlignments
     });
 
-    return () => subscription.unsubscribe();
-  }, [form, metrics, selectedTags, parentAlignments, currentUser, lastValidation]);
+    if (currentValues === lastValidation) return;
+
+    setLastValidation(currentValues);
+    setIsValidating(true);
+
+    try {
+      const tempGoal: Goal = {
+        id: 'temp',
+        orgUnitId: currentUser!.orgUnitId,
+        title: value.title || '',
+        description: value.description || '',
+        ownerUserId: currentUser!.id,
+        period: 'TRIMESTRAL',
+        startDate: new Date().toISOString(),
+        endDate: new Date(Date.now() + 90 * 24 * 60 * 60 * 1000).toISOString(),
+        metrics: metrics.filter(m => m.name.trim() !== ''),
+        tags: selectedTags,
+        parentGoalAlignments: parentAlignments,
+        status: 'DRAFT',
+        createdAt: new Date().toISOString(),
+        updatedAt: new Date().toISOString(),
+      };
+
+      const aiFeedback = await simulateAIValidation(tempGoal);
+      setFeedback(aiFeedback);
+    } catch (error) {
+      console.error('Validation error:', error);
+    } finally {
+      setIsValidating(false);
+    }
+  }
 
   const addMetric = () => {
     setMetrics([...metrics, { name: '', target: '', unit: '' }]);
@@ -143,7 +140,7 @@ export default function CreateGoal() {
     if (!currentUser) return;
 
     const validMetrics = metrics.filter(m => m.name.trim() !== '');
-    
+
     if (validMetrics.length === 0) {
       toast({
         title: "Métrica requerida",
@@ -177,8 +174,11 @@ export default function CreateGoal() {
       title: "Objetivo creado",
       description: `El objetivo "${data.title}" ha sido ${statusText}`,
     });
-
-    navigate('/goals');
+    if (status === 'DRAFT') {
+      await generateFeedback();
+    } else {
+      navigate('/goals');
+    }
   };
 
   if (!currentUser) return null;
@@ -219,9 +219,9 @@ export default function CreateGoal() {
                       <FormItem>
                         <FormLabel>Título del objetivo</FormLabel>
                         <FormControl>
-                          <Input 
+                          <Input
                             placeholder="Tu título relaciona tu objetivo para que luzca y se vea como un Borrador."
-                            {...field} 
+                            {...field}
                           />
                         </FormControl>
                         <FormMessage />
@@ -236,10 +236,10 @@ export default function CreateGoal() {
                       <FormItem>
                         <FormLabel>Objetivo</FormLabel>
                         <FormControl>
-                          <Textarea 
+                          <Textarea
                             placeholder="Explícanos de tu idea completamente así te ayudamos con la vinculación, características y funcionalidades que no hemos visto anteriormente..."
                             className="min-h-24"
-                            {...field} 
+                            {...field}
                           />
                         </FormControl>
                         <FormMessage />
@@ -255,10 +255,10 @@ export default function CreateGoal() {
                 <CardHeader>
                   <CardTitle className="flex items-center justify-between">
                     Objetivos Padre
-                    <Button 
-                      type="button" 
-                      variant="outline" 
-                      size="sm" 
+                    <Button
+                      type="button"
+                      variant="outline"
+                      size="sm"
                       onClick={addParentAlignment}
                     >
                       <Plus className="w-4 h-4" />
@@ -296,13 +296,13 @@ export default function CreateGoal() {
                                 <X className="w-4 h-4" />
                               </Button>
                             </div>
-                            
+
                             <div className="space-y-3">
                               <div>
                                 <label className="text-sm font-medium">Seleccionar Objetivo (Borrador)</label>
                                 {parentGoals.length > 0 ? (
-                                  <Select 
-                                    value={alignment.parentGoalId} 
+                                  <Select
+                                    value={alignment.parentGoalId}
                                     onValueChange={(value) => updateParentAlignment(index, 'parentGoalId', value)}
                                   >
                                     <SelectTrigger>
@@ -322,7 +322,7 @@ export default function CreateGoal() {
                                   </div>
                                 )}
                               </div>
-                              
+
                               <div>
                                 <label className="text-sm font-medium">(Opcional) Por qué es objetivo es relevante para el objetivo padre?</label>
                                 <Textarea
@@ -396,40 +396,19 @@ export default function CreateGoal() {
                 </CardContent>
               </Card>
 
-              {/* Team Alignment */}
-              <Card>
-                <CardHeader>
-                  <CardTitle>Conectar con mi Equipo</CardTitle>
-                </CardHeader>
-                <CardContent>
-                  <div className="flex flex-wrap gap-2">
-                    {commonTags.map(tag => (
-                      <Badge
-                        key={tag}
-                        variant={selectedTags.includes(tag) ? "default" : "outline"}
-                        className="cursor-pointer"
-                        onClick={() => toggleTag(tag)}
-                      >
-                        {selectedTags.includes(tag) && <X className="w-3 h-3 mr-1" />}
-                        {tag}
-                      </Badge>
-                    ))}
-                  </div>
-                </CardContent>
-              </Card>
 
               {/* Actions */}
               <div className="flex gap-3">
-                <Button 
-                  type="button" 
-                  variant="outline" 
+                <Button
+                  type="button"
+                  variant="outline"
                   onClick={form.handleSubmit((data) => onSubmit(data, 'DRAFT'))}
-                  disabled={!form.formState.isValid}
+
                 >
                   Guardar Borrador
                 </Button>
-                <Button 
-                  type="button" 
+                <Button
+                  type="button"
                   onClick={form.handleSubmit((data) => onSubmit(data, 'IN_REVIEW'))}
                   disabled={!form.formState.isValid}
                 >

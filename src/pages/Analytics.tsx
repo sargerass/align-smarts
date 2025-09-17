@@ -26,11 +26,11 @@ export default function Analytics() {
       return evaluateSmartGoal(goal, parentGoal);
     });
 
-    const avgSmartScore = smartScores.length > 0 
+    const avgSmartScore = smartScores.length > 0
       ? Math.round(smartScores.reduce((sum, s) => sum + s.smartScore, 0) / smartScores.length)
       : 0;
 
-    const avgAlignmentScore = smartScores.length > 0 
+    const avgAlignmentScore = smartScores.length > 0
       ? Math.round(smartScores.reduce((sum, s) => sum + s.alignmentScore, 0) / smartScores.length)
       : 0;
 
@@ -94,16 +94,16 @@ export default function Analytics() {
 
   if (!currentUser || !analytics) return null;
 
-  const { 
-    userOrgUnit, 
-    userGoals, 
-    avgSmartScore, 
-    avgAlignmentScore, 
-    smartBreakdown, 
+  const {
+    userOrgUnit,
+    userGoals,
+    avgSmartScore,
+    avgAlignmentScore,
+    smartBreakdown,
     statusDistribution,
     periodDistribution,
     improvementData,
-    orgOverview 
+    orgOverview
   } = analytics;
 
   const getScoreColor = (score: number) => {
@@ -202,9 +202,9 @@ export default function Analytics() {
                 R: 'Relevante',
                 T: 'Tiempo definido'
               };
-              
+
               const normalizedScore = Math.round((score / 20) * 100);
-              
+
               return (
                 <div key={criteria} className="space-y-2">
                   <div className="flex items-center justify-between">
@@ -220,41 +220,6 @@ export default function Analytics() {
           </CardContent>
         </Card>
 
-        {/* Improvement Trend Simulation */}
-        <Card>
-          <CardHeader>
-            <CardTitle className="flex items-center gap-2">
-              <TrendingUp className="w-5 h-5" />
-              Tendencia de Mejora
-            </CardTitle>
-            <CardDescription>
-              Evolución de scores SMART y alineación (simulado)
-            </CardDescription>
-          </CardHeader>
-          <CardContent>
-            <div className="space-y-4">
-              {improvementData.map((data, index) => (
-                <div key={data.month} className="space-y-2">
-                  <div className="flex items-center justify-between">
-                    <span className="text-sm font-medium">{data.month}</span>
-                    <div className="flex gap-2">
-                      <Badge variant="outline" className="text-xs">
-                        SMART: {data.smart}%
-                      </Badge>
-                      <Badge variant="outline" className="text-xs">
-                        Alineación: {data.alignment}%
-                      </Badge>
-                    </div>
-                  </div>
-                  <div className="grid grid-cols-2 gap-2">
-                    <Progress value={data.smart} className="h-1" />
-                    <Progress value={data.alignment} className="h-1" />
-                  </div>
-                </div>
-              ))}
-            </div>
-          </CardContent>
-        </Card>
 
         {/* Status Distribution */}
         <Card>
@@ -271,21 +236,21 @@ export default function Analytics() {
             {Object.entries(statusDistribution).map(([status, count]) => {
               const total = Object.values(statusDistribution).reduce((a, b) => a + b, 0);
               const percentage = total > 0 ? Math.round((count / total) * 100) : 0;
-              
+
               const statusLabels = {
                 DRAFT: 'Borrador',
                 ACTIVE: 'Activo',
                 DONE: 'Completado',
                 CANCELLED: 'Cancelado'
               };
-              
+
               const statusColors = {
                 DRAFT: 'warning',
                 ACTIVE: 'success',
                 DONE: 'success',
                 CANCELLED: 'error'
               };
-              
+
               return (
                 <div key={status} className="flex items-center justify-between">
                   <div className="flex items-center gap-2">
@@ -301,34 +266,6 @@ export default function Analytics() {
           </CardContent>
         </Card>
 
-        {/* Period Distribution */}
-        <Card>
-          <CardHeader>
-            <CardTitle className="flex items-center gap-2">
-              <Target className="w-5 h-5" />
-              Distribución por Período
-            </CardTitle>
-            <CardDescription>
-              Objetivos organizados por horizonte temporal
-            </CardDescription>
-          </CardHeader>
-          <CardContent className="space-y-3">
-            {Object.entries(periodDistribution).map(([period, count]) => {
-              const total = Object.values(periodDistribution).reduce((a, b) => a + b, 0);
-              const percentage = total > 0 ? Math.round((count / total) * 100) : 0;
-              
-              return (
-                <div key={period} className="flex items-center justify-between">
-                  <div className="flex items-center gap-2">
-                    <Badge variant="outline">{period}</Badge>
-                    <span className="text-sm">{count} objetivos</span>
-                  </div>
-                  <span className="text-sm text-muted-foreground">{percentage}%</span>
-                </div>
-              );
-            })}
-          </CardContent>
-        </Card>
       </div>
 
       {/* Organization Overview (Admin only) */}
