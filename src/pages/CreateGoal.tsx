@@ -17,8 +17,8 @@ import { useOrganizationStore } from '@/stores/organizationStore';
 import { simulateAIValidation } from '@/utils/smartValidator';
 import { useToast } from '@/hooks/use-toast';
 import { commonTags } from '@/data/seedData';
-import { ArrowLeft, Plus, X, Loader2, Sparkles } from 'lucide-react';
-import type { Goal, GoalMetric, SmartFeedback } from '@/types';
+import { ArrowLeft, Plus, X, Loader2, AlertCircle } from 'lucide-react';
+import type { Goal, GoalMetric, SmartFeedback, ParentGoalAlignment } from '@/types';
 
 const goalSchema = z.object({
   title: z.string().min(5, 'El título debe tener al menos 5 caracteres'),
@@ -26,7 +26,6 @@ const goalSchema = z.object({
   period: z.enum(['ANUAL', 'TRIMESTRAL', 'MENSUAL']),
   startDate: z.string().min(1, 'Fecha de inicio requerida'),
   endDate: z.string().min(1, 'Fecha de fin requerida'),
-  parentGoalId: z.string().optional(),
 });
 
 type FormData = z.infer<typeof goalSchema>;
@@ -39,6 +38,7 @@ export default function CreateGoal() {
   const { toast } = useToast();
 
   const [metrics, setMetrics] = useState<GoalMetric[]>([{ name: '', target: '', unit: '' }]);
+  const [parentAlignments, setParentAlignments] = useState<ParentGoalAlignment[]>([]);
   const [selectedTags, setSelectedTags] = useState<string[]>([]);
   const [feedback, setFeedback] = useState<SmartFeedback | undefined>();
   const [isValidating, setIsValidating] = useState(false);
@@ -52,7 +52,6 @@ export default function CreateGoal() {
       period: 'TRIMESTRAL',
       startDate: '',
       endDate: '',
-      parentGoalId: undefined,
     },
   });
 
@@ -62,7 +61,6 @@ export default function CreateGoal() {
   // Real-time AI validation
   useEffect(() => {
     const subscription = form.watch(async (value) => {
-      // Only validate if we have minimum required data
       if (!value.title || !value.description || value.title.length < 5) {
         setFeedback(undefined);
         return;
@@ -73,10 +71,9 @@ export default function CreateGoal() {
         description: value.description,
         metrics,
         tags: selectedTags,
-        parentGoalId: value.parentGoalId 
+        parentAlignments 
       });
 
-      // Avoid re-validating the same content
       if (currentValues === lastValidation) return;
       
       setLastValidation(currentValues);
@@ -94,14 +91,13 @@ export default function CreateGoal() {
           endDate: value.endDate || new Date(Date.now() + 90 * 24 * 60 * 60 * 1000).toISOString(),
           metrics: metrics.filter(m => m.name.trim() !== ''),
           tags: selectedTags,
-          parentGoalId: value.parentGoalId,
+          parentGoalAlignments: parentAlignments,
           status: 'DRAFT',
           createdAt: new Date().toISOString(),
           updatedAt: new Date().toISOString(),
         };
 
-        const parentGoal = value.parentGoalId ? getGoalById(value.parentGoalId) : undefined;
-        const aiFeedback = await simulateAIValidation(tempGoal, parentGoal);
+        const aiFeedback = await simulateAIValidation(tempGoal);
         setFeedback(aiFeedback);
       } catch (error) {
         console.error('Validation error:', error);
@@ -111,7 +107,7 @@ export default function CreateGoal() {
     });
 
     return () => subscription.unsubscribe();
-  }, [form, metrics, selectedTags, currentUser, getGoalById, lastValidation]);
+  }, [form, metrics, selectedTags, parentAlignments, currentUser, lastValidation]);
 
   const addMetric = () => {
     setMetrics([...metrics, { name: '', target: '', unit: '' }]);
@@ -127,6 +123,20 @@ export default function CreateGoal() {
     setMetrics(metrics.filter((_, i) => i !== index));
   };
 
+  const addParentAlignment = () => {
+    setParentAlignments([...parentAlignments, { parentGoalId: '', relevanceReason: '' }]);
+  };
+
+  const updateParentAlignment = (index: number, field: keyof ParentGoalAlignment, value: string) => {
+    const newAlignments = [...parentAlignments];
+    newAlignments[index] = { ...newAlignments[index], [field]: value };
+    setParentAlignments(newAlignments);
+  };
+
+  const removeParentAlignment = (index: number) => {
+    setParentAlignments(parentAlignments.filter((_, i) => i !== index));
+  };
+
   const toggleTag = (tag: string) => {
     setSelectedTags(prev =>
       prev.includes(tag)
@@ -135,7 +145,7 @@ export default function CreateGoal() {
     );
   };
 
-  const onSubmit = async (data: FormData) => {
+  const onSubmit = async (data: FormData, status: 'DRAFT' | 'IN_REVIEW' = 'DRAFT') => {
     if (!currentUser) return;
 
     const validMetrics = metrics.filter(m => m.name.trim() !== '');
@@ -160,59 +170,18 @@ export default function CreateGoal() {
       endDate: data.endDate,
       metrics: validMetrics,
       tags: selectedTags,
-      parentGoalId: data.parentGoalId,
-      status: 'DRAFT',
+      parentGoalAlignments: parentAlignments.filter(a => a.parentGoalId),
+      status,
       createdAt: new Date().toISOString(),
       updatedAt: new Date().toISOString(),
     };
 
     addGoal(newGoal);
 
+    const statusText = status === 'DRAFT' ? 'guardado como borrador' : 'enviado a revisión';
     toast({
       title: "Objetivo creado",
-      description: `El objetivo "${data.title}" ha sido creado exitosamente`,
-    });
-
-    navigate('/goals');
-  };
-
-  const activateGoal = async (data: FormData) => {
-    if (!feedback || feedback.smartScore < 50) {
-      toast({
-        title: "Calidad insuficiente",
-        description: "El objetivo necesita un score SMART mínimo de 50/100 para ser activado",
-        variant: "destructive",
-      });
-      return;
-    }
-
-    // Create and activate goal directly
-    if (!currentUser) return;
-
-    const validMetrics = metrics.filter(m => m.name.trim() !== '');
-    
-    const newGoal: Goal = {
-      id: `goal-${Date.now()}`,
-      orgUnitId: currentUser.orgUnitId,
-      title: data.title,
-      description: data.description,
-      ownerUserId: currentUser.id,
-      period: data.period,
-      startDate: data.startDate,
-      endDate: data.endDate,
-      metrics: validMetrics,
-      tags: selectedTags,
-      parentGoalId: data.parentGoalId,
-      status: 'ACTIVE', // Directly activate
-      createdAt: new Date().toISOString(),
-      updatedAt: new Date().toISOString(),
-    };
-
-    addGoal(newGoal);
-
-    toast({
-      title: "Objetivo activado",
-      description: `El objetivo "${data.title}" ha sido creado y activado exitosamente`,
+      description: `El objetivo "${data.title}" ha sido ${statusText}`,
     });
 
     navigate('/goals');
@@ -228,7 +197,7 @@ export default function CreateGoal() {
           <ArrowLeft className="w-4 h-4" />
         </Button>
         <div>
-          <h1 className="text-3xl font-bold">Nuevo Objetivo SMART</h1>
+          <h1 className="text-3xl font-bold">Nuevo Objetivo</h1>
           <p className="text-muted-foreground">
             Crea un objetivo para {userOrgUnit?.name}
           </p>
@@ -240,11 +209,12 @@ export default function CreateGoal() {
         <div className="space-y-6">
           <Form {...form}>
             <form className="space-y-6">
+              {/* Mi Objetivo */}
               <Card>
                 <CardHeader>
-                  <CardTitle>Información básica</CardTitle>
+                  <CardTitle>Mi Objetivo</CardTitle>
                   <CardDescription>
-                    Define los aspectos fundamentales de tu objetivo
+                    No olvides revistar tu objetivo antes de enviarlo a Borrador
                   </CardDescription>
                 </CardHeader>
                 <CardContent className="space-y-4">
@@ -256,7 +226,7 @@ export default function CreateGoal() {
                         <FormLabel>Título del objetivo</FormLabel>
                         <FormControl>
                           <Input 
-                            placeholder="Incrementar ventas del equipo en 25%..."
+                            placeholder="Tu título relaciona tu objetivo para que luzca y se vea como un Borrador."
                             {...field} 
                           />
                         </FormControl>
@@ -270,11 +240,11 @@ export default function CreateGoal() {
                     name="description"
                     render={({ field }) => (
                       <FormItem>
-                        <FormLabel>Descripción detallada</FormLabel>
+                        <FormLabel>Objetivo</FormLabel>
                         <FormControl>
                           <Textarea 
-                            placeholder="Describe el contexto, metodología y beneficios esperados..."
-                            className="min-h-20"
+                            placeholder="Explícanos de tu idea completamente así te ayudamos con la vinculación, características y funcionalidades que no hemos visto anteriormente..."
+                            className="min-h-24"
                             {...field} 
                           />
                         </FormControl>
@@ -283,7 +253,7 @@ export default function CreateGoal() {
                     )}
                   />
 
-                  <div className="grid sm:grid-cols-2 gap-4">
+                  <div className="grid sm:grid-cols-3 gap-4">
                     <FormField
                       control={form.control}
                       name="period"
@@ -307,35 +277,6 @@ export default function CreateGoal() {
                       )}
                     />
 
-                    {parentGoals.length > 0 && (
-                      <FormField
-                        control={form.control}
-                        name="parentGoalId"
-                        render={({ field }) => (
-                          <FormItem>
-                            <FormLabel>Objetivo padre</FormLabel>
-                            <FormControl>
-                              <Select value={field.value} onValueChange={field.onChange}>
-                                <SelectTrigger>
-                                  <SelectValue placeholder="Seleccionar..." />
-                                </SelectTrigger>
-                                <SelectContent>
-                                  {parentGoals.map(goal => (
-                                    <SelectItem key={goal.id} value={goal.id}>
-                                      {goal.title}
-                                    </SelectItem>
-                                  ))}
-                                </SelectContent>
-                              </Select>
-                            </FormControl>
-                            <FormMessage />
-                          </FormItem>
-                        )}
-                      />
-                    )}
-                  </div>
-
-                  <div className="grid sm:grid-cols-2 gap-4">
                     <FormField
                       control={form.control}
                       name="startDate"
@@ -364,6 +305,87 @@ export default function CreateGoal() {
                       )}
                     />
                   </div>
+                </CardContent>
+              </Card>
+
+              {/* Objetivos Padre */}
+              <Card>
+                <CardHeader>
+                  <CardTitle className="flex items-center justify-between">
+                    Objetivos Padre
+                    <Button 
+                      type="button" 
+                      variant="outline" 
+                      size="sm" 
+                      onClick={addParentAlignment}
+                      disabled={parentGoals.length === 0}
+                    >
+                      <Plus className="w-4 h-4" />
+                      Agregar Objetivo Padre
+                    </Button>
+                  </CardTitle>
+                  <CardDescription>
+                    Selecciona objetivos superiores con los que se alinea tu objetivo
+                  </CardDescription>
+                </CardHeader>
+                <CardContent className="space-y-4">
+                  {parentGoals.length === 0 ? (
+                    <div className="text-center py-8 text-muted-foreground">
+                      <AlertCircle className="w-12 h-12 mx-auto mb-3 opacity-50" />
+                      <p>No hay objetivos superiores disponibles para alineación</p>
+                    </div>
+                  ) : (
+                    <>
+                      {parentAlignments.map((alignment, index) => (
+                        <Card key={index} className="p-4">
+                          <div className="space-y-4">
+                            <div className="flex items-center justify-between">
+                              <h4 className="font-medium">Objetivo Padre</h4>
+                              <Button
+                                type="button"
+                                variant="ghost"
+                                size="sm"
+                                onClick={() => removeParentAlignment(index)}
+                              >
+                                <X className="w-4 h-4" />
+                              </Button>
+                            </div>
+                            
+                            <div className="space-y-3">
+                              <div>
+                                <label className="text-sm font-medium">Seleccionar Objetivo (Borrador)</label>
+                                <Select 
+                                  value={alignment.parentGoalId} 
+                                  onValueChange={(value) => updateParentAlignment(index, 'parentGoalId', value)}
+                                >
+                                  <SelectTrigger>
+                                    <SelectValue placeholder="Seleccionar objetivo padre..." />
+                                  </SelectTrigger>
+                                  <SelectContent>
+                                    {parentGoals.map(goal => (
+                                      <SelectItem key={goal.id} value={goal.id}>
+                                        {goal.title}
+                                      </SelectItem>
+                                    ))}
+                                  </SelectContent>
+                                </Select>
+                              </div>
+                              
+                              <div>
+                                <label className="text-sm font-medium">(Opcional) Por qué es objetivo es relevante para el objetivo padre?</label>
+                                <Textarea
+                                  placeholder="Explícanos de tu idea completamente así te ayudamos con la vinculación, características y funcionalidades que no hemos visto anteriormente..."
+                                  className="min-h-20 mt-2"
+                                  value={alignment.relevanceReason || ''}
+                                  onChange={(e) => updateParentAlignment(index, 'relevanceReason', e.target.value)}
+                                />
+                              </div>
+                            </div>
+                          </div>
+                        </Card>
+                      ))}
+                    </>
+                  )}
                 </CardContent>
               </Card>
 
@@ -422,13 +444,10 @@ export default function CreateGoal() {
                 </CardContent>
               </Card>
 
-              {/* Tags */}
+              {/* Team Alignment */}
               <Card>
                 <CardHeader>
-                  <CardTitle>Tags de alineación</CardTitle>
-                  <CardDescription>
-                    Selecciona tags que conecten con objetivos superiores
-                  </CardDescription>
+                  <CardTitle>Conectar con mi Equipo</CardTitle>
                 </CardHeader>
                 <CardContent>
                   <div className="flex flex-wrap gap-2">
@@ -439,6 +458,7 @@ export default function CreateGoal() {
                         className="cursor-pointer"
                         onClick={() => toggleTag(tag)}
                       >
+                        {selectedTags.includes(tag) && <X className="w-3 h-3 mr-1" />}
                         {tag}
                       </Badge>
                     ))}
@@ -451,19 +471,17 @@ export default function CreateGoal() {
                 <Button 
                   type="button" 
                   variant="outline" 
-                  onClick={form.handleSubmit(onSubmit)}
+                  onClick={form.handleSubmit((data) => onSubmit(data, 'DRAFT'))}
                   disabled={!form.formState.isValid}
                 >
-                  Guardar borrador
+                  Guardar Borrador
                 </Button>
                 <Button 
                   type="button" 
-                  onClick={form.handleSubmit(activateGoal)}
-                  disabled={!form.formState.isValid || !feedback || feedback.smartScore < 50}
-                  className="gap-2"
+                  onClick={form.handleSubmit((data) => onSubmit(data, 'IN_REVIEW'))}
+                  disabled={!form.formState.isValid}
                 >
-                  <Sparkles className="w-4 h-4" />
-                  Activar objetivo
+                  Enviar a Aprobación
                 </Button>
               </div>
             </form>

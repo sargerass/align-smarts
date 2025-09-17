@@ -22,13 +22,18 @@ export type User = {
 
 // Goal management types
 export type GoalPeriod = "ANUAL" | "TRIMESTRAL" | "MENSUAL";
-export type GoalStatus = "DRAFT" | "ACTIVE" | "DONE" | "CANCELLED";
+export type GoalStatus = "DRAFT" | "IN_REVIEW" | "APPROVED" | "ACTIVE" | "DONE" | "CANCELLED";
 
 export type GoalMetric = {
   name: string;
   baseline?: number | string;
   target?: number | string;
   unit?: string;
+};
+
+export type ParentGoalAlignment = {
+  parentGoalId: string;
+  relevanceReason?: string; // Optional field to explain why this goal is relevant to the parent
 };
 
 export type Goal = {
@@ -41,13 +46,15 @@ export type Goal = {
   startDate: string; // ISO date
   endDate: string; // ISO date
   metrics: GoalMetric[];
-  parentGoalId?: string;
+  parentGoalAlignments?: ParentGoalAlignment[]; // Multiple parent goal alignments
   tags?: string[];
   status: GoalStatus;
   createdAt: string;
   updatedAt: string;
   plans?: GoalPlan[];
   reviews?: GoalReview[];
+  // Legacy support
+  parentGoalId?: string; // Keep for backward compatibility
 };
 
 export type GoalPlan = {

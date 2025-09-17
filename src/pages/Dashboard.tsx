@@ -22,6 +22,24 @@ export default function Dashboard() {
   // Get goals relevant to current user
   const userGoals = currentUser ? getGoalsByOrgUnit(currentUser.orgUnitId) : [];
   const parentGoals = currentUser ? getParentGoals(currentUser.orgUnitId) : [];
+  
+  // Get team goals that need review (if user is manager/leader)
+  const teamGoalsToReview = useMemo(() => {
+    if (!currentUser || !['GERENTE', 'LIDER_EQUIPO', 'VP', 'C_LEVEL'].includes(currentUser.role)) {
+      return [];
+    }
+    
+    // Get all child org units
+    const { getChildOrgUnits, getUsersByOrgUnit } = useOrganizationStore.getState();
+    const childUnits = getChildOrgUnits(currentUser.orgUnitId);
+    const childUsers = childUnits.flatMap(unit => getUsersByOrgUnit(unit.id));
+    
+    // Get goals from team members that need review
+    return goals.filter(goal => 
+      childUsers.some(user => user.id === goal.ownerUserId) && 
+      ['IN_REVIEW'].includes(goal.status)
+    );
+  }, [currentUser, goals]);
 
   // Calculate dashboard metrics
   const dashboardMetrics: DashboardMetrics = useMemo(() => {
@@ -46,6 +64,8 @@ export default function Dashboard() {
 
     const goalsByStatus = {
       DRAFT: userGoals.filter(g => g.status === 'DRAFT').length,
+      IN_REVIEW: userGoals.filter(g => g.status === 'IN_REVIEW').length,
+      APPROVED: userGoals.filter(g => g.status === 'APPROVED').length,
       ACTIVE: userGoals.filter(g => g.status === 'ACTIVE').length,
       DONE: userGoals.filter(g => g.status === 'DONE').length,
       CANCELLED: userGoals.filter(g => g.status === 'CANCELLED').length,
@@ -67,9 +87,11 @@ export default function Dashboard() {
   const getStatusColor = (status: string) => {
     switch (status) {
       case 'ACTIVE': return 'success';
-      case 'DRAFT': return 'warning';
+      case 'APPROVED': return 'success';
+      case 'DRAFT': return 'secondary';
+      case 'IN_REVIEW': return 'warning';
       case 'DONE': return 'success';
-      case 'CANCELLED': return 'error';
+      case 'CANCELLED': return 'destructive';
       default: return 'secondary';
     }
   };
@@ -77,7 +99,9 @@ export default function Dashboard() {
   const getStatusIcon = (status: string) => {
     switch (status) {
       case 'ACTIVE': return <CheckCircle className="w-4 h-4" />;
+      case 'APPROVED': return <CheckCircle className="w-4 h-4" />;
       case 'DRAFT': return <Clock className="w-4 h-4" />;
+      case 'IN_REVIEW': return <Clock className="w-4 h-4" />;
       case 'DONE': return <CheckCircle className="w-4 h-4" />;
       case 'CANCELLED': return <AlertTriangle className="w-4 h-4" />;
       default: return <Target className="w-4 h-4" />;
@@ -159,7 +183,7 @@ export default function Dashboard() {
         </Card>
       </div>
 
-      <div className="grid lg:grid-cols-2 gap-6">
+      <div className="grid lg:grid-cols-3 gap-6">
         {/* User's Goals */}
         <Card>
           <CardHeader>
@@ -221,6 +245,64 @@ export default function Dashboard() {
           </CardContent>
         </Card>
 
+        {/* Team Goals to Review */}
+        <Card>
+          <CardHeader>
+            <CardTitle className="flex items-center gap-2">
+              <Users className="w-5 h-5" />
+              Objetivos de Mi Equipo
+            </CardTitle>
+            <CardDescription>
+              Objetivos aprobados y pendientes de revisión
+            </CardDescription>
+          </CardHeader>
+          <CardContent className="space-y-4">
+            {teamGoalsToReview.length === 0 ? (
+              <div className="text-center py-8 text-muted-foreground">
+                <Users className="w-12 h-12 mx-auto mb-3 opacity-50" />
+                <p>No hay objetivos del equipo pendientes de revisión</p>
+              </div>
+            ) : (
+              teamGoalsToReview.slice(0, 3).map(goal => {
+                const goalOwner = useOrganizationStore.getState().users.find(u => u.id === goal.ownerUserId);
+                
+                return (
+                  <div key={goal.id} className="space-y-2 p-3 rounded-lg border bg-orange-50 dark:bg-orange-950/20">
+                    <div className="flex items-start justify-between">
+                      <div className="flex-1 min-w-0">
+                        <h4 className="font-medium truncate">{goal.title}</h4>
+                        <p className="text-sm text-muted-foreground">
+                          Por: {goalOwner?.name}
+                        </p>
+                        <p className="text-sm text-muted-foreground line-clamp-2">
+                          {goal.description}
+                        </p>
+                      </div>
+                      <Badge variant="outline" className="ml-2 bg-orange-100 text-orange-800 dark:bg-orange-900 dark:text-orange-200">
+                        <Clock className="w-3 h-3 mr-1" />
+                        En Revisión
+                      </Badge>
+                    </div>
+                    <div className="flex items-center gap-2">
+                      <Button size="sm" variant="outline">
+                        Aprobar
+                      </Button>
+                      <Button size="sm" variant="outline">
+                        Solicitar Cambios
+                      </Button>
+                    </div>
+                  </div>
+                );
+              })
+            )}
+            {teamGoalsToReview.length > 3 && (
+              <Button asChild variant="outline" className="w-full">
+                <Link to="/goals?filter=team-review">Ver todos los objetivos pendientes</Link>
+              </Button>
+            )}
+          </CardContent>
+        </Card>
+
         {/* Parent Goals */}
         <Card>
           <CardHeader>
@@ -248,7 +330,7 @@ export default function Dashboard() {
                         {goal.description}
                       </p>
                     </div>
-                    <Badge variant="outline" className="ml-2 bg-brand-gold text-brand-black">
+                    <Badge variant="outline" className="ml-2">
                       {goal.period}
                     </Badge>
                   </div>
