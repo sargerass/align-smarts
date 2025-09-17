@@ -183,7 +183,7 @@ export default function Dashboard() {
         </Card>
       </div>
 
-      <div className="grid lg:grid-cols-3 gap-6">
+      <div className="grid lg:grid-cols-2 gap-6">
         {/* User's Goals */}
         <Card>
           <CardHeader>
@@ -197,13 +197,40 @@ export default function Dashboard() {
           </CardHeader>
           <CardContent className="space-y-4">
             {userGoals.length === 0 ? (
-              <div className="text-center py-8 text-muted-foreground">
-                <Target className="w-12 h-12 mx-auto mb-3 opacity-50" />
-                <p>No tienes objetivos definidos aún</p>
-                <Button asChild className="mt-3" variant="outline">
-                  <Link to="/goals/new">Crear primer objetivo</Link>
-                </Button>
-              </div>
+              <>
+                <div className="text-center py-8 text-muted-foreground">
+                  <Target className="w-12 h-12 mx-auto mb-3 opacity-50" />
+                  <p>No tienes objetivos definidos aún</p>
+                  <Button asChild className="mt-3" variant="outline">
+                    <Link to="/goals/new">Crear primer objetivo</Link>
+                  </Button>
+                </div>
+                {/* Sample data to show layout */}
+                <div className="space-y-2 p-3 rounded-lg border opacity-50">
+                  <div className="flex items-start justify-between">
+                    <div className="flex-1 min-w-0">
+                      <h4 className="font-medium">Incrementar ventas del equipo en 25%</h4>
+                      <p className="text-sm text-muted-foreground line-clamp-2">
+                        Desarrollar estrategias de venta para alcanzar el objetivo trimestral...
+                      </p>
+                    </div>
+                    <Badge variant="outline" className="ml-2">
+                      <CheckCircle className="w-4 h-4" />
+                      ACTIVE
+                    </Badge>
+                  </div>
+                  <div className="flex items-center gap-4 text-sm">
+                    <div className="flex items-center gap-1">
+                      <span>SMART:</span>
+                      <Badge variant="secondary">85/100</Badge>
+                    </div>
+                    <div className="flex items-center gap-1">
+                      <span>Alineación:</span>
+                      <Badge variant="secondary">92/100</Badge>
+                    </div>
+                  </div>
+                </div>
+              </>
             ) : (
               userGoals.slice(0, 3).map(goal => {
                 const parentGoal = goal.parentGoalId ? getGoalById(goal.parentGoalId) : undefined;
@@ -316,10 +343,30 @@ export default function Dashboard() {
           </CardHeader>
           <CardContent className="space-y-4">
             {parentGoals.length === 0 ? (
-              <div className="text-center py-8 text-muted-foreground">
-                <TrendingUp className="w-12 h-12 mx-auto mb-3 opacity-50" />
-                <p>No hay objetivos superiores definidos</p>
-              </div>
+              <>
+                <div className="text-center py-8 text-muted-foreground">
+                  <TrendingUp className="w-12 h-12 mx-auto mb-3 opacity-50" />
+                  <p>No hay objetivos superiores definidos</p>
+                </div>
+                {/* Sample data to show layout */}
+                <div className="space-y-2 p-3 rounded-lg border bg-accent/10 opacity-50">
+                  <div className="flex items-start justify-between">
+                    <div className="flex-1 min-w-0">
+                      <h4 className="font-medium">Expansión de mercado regional</h4>
+                      <p className="text-sm text-muted-foreground line-clamp-2">
+                        Alcanzar nuevos mercados en la región para aumentar participación...
+                      </p>
+                    </div>
+                    <Badge variant="outline" className="ml-2">
+                      TRIMESTRAL
+                    </Badge>
+                  </div>
+                  <div className="flex flex-wrap gap-1">
+                    <Badge variant="secondary" className="text-xs">Crecimiento</Badge>
+                    <Badge variant="secondary" className="text-xs">Ventas</Badge>
+                  </div>
+                </div>
+              </>
             ) : (
               parentGoals.slice(0, 3).map(goal => (
                 <div key={goal.id} className="space-y-2 p-3 rounded-lg border bg-accent/10">
@@ -347,6 +394,139 @@ export default function Dashboard() {
           </CardContent>
         </Card>
       </div>
+
+      {/* Team Goals Section - Full Width */}
+      <Card>
+        <CardHeader>
+          <CardTitle className="flex items-center gap-2">
+            <Users className="w-5 h-5" />
+            Objetivos de Mi Equipo
+          </CardTitle>
+          <CardDescription>
+            Objetivos aprobados y pendientes de revisión de tu equipo
+          </CardDescription>
+        </CardHeader>
+        <CardContent className="space-y-4">
+          {teamGoalsToReview.length === 0 ? (
+            <>
+              <div className="text-center py-8 text-muted-foreground">
+                <Users className="w-12 h-12 mx-auto mb-3 opacity-50" />
+                <p>No hay objetivos del equipo pendientes de revisión</p>
+              </div>
+              {/* Sample data to show layout */}
+              <div className="grid md:grid-cols-2 lg:grid-cols-3 gap-4">
+                <div className="space-y-2 p-4 rounded-lg border bg-orange-50 dark:bg-orange-950/20 opacity-50">
+                  <div className="flex items-start justify-between">
+                    <div className="flex-1 min-w-0">
+                      <h4 className="font-medium">Mejorar satisfacción del cliente</h4>
+                      <p className="text-sm text-muted-foreground">
+                        Por: María González
+                      </p>
+                      <p className="text-sm text-muted-foreground line-clamp-2">
+                        Implementar sistema de seguimiento para mejorar la experiencia...
+                      </p>
+                    </div>
+                    <Badge variant="outline" className="ml-2 bg-orange-100 text-orange-800">
+                      <Clock className="w-3 h-3 mr-1" />
+                      En Revisión
+                    </Badge>
+                  </div>
+                  <div className="flex items-center gap-2">
+                    <Button size="sm" variant="outline">
+                      Aprobar
+                    </Button>
+                    <Button size="sm" variant="outline">
+                      Solicitar Cambios
+                    </Button>
+                  </div>
+                </div>
+                
+                <div className="space-y-2 p-4 rounded-lg border bg-green-50 dark:bg-green-950/20 opacity-50">
+                  <div className="flex items-start justify-between">
+                    <div className="flex-1 min-w-0">
+                      <h4 className="font-medium">Reducir tiempo de respuesta</h4>
+                      <p className="text-sm text-muted-foreground">
+                        Por: Carlos Ruiz
+                      </p>
+                      <p className="text-sm text-muted-foreground line-clamp-2">
+                        Optimizar procesos internos para responder más rápido...
+                      </p>
+                    </div>
+                    <Badge variant="outline" className="ml-2 bg-green-100 text-green-800">
+                      <CheckCircle className="w-3 h-3 mr-1" />
+                      Aprobado
+                    </Badge>
+                  </div>
+                  <div className="flex items-center gap-2">
+                    <Button size="sm" variant="outline">
+                      Ver Progreso
+                    </Button>
+                  </div>
+                </div>
+
+                <div className="space-y-2 p-4 rounded-lg border bg-blue-50 dark:bg-blue-950/20 opacity-50">
+                  <div className="flex-1 min-w-0">
+                    <h4 className="font-medium">Capacitación del equipo</h4>
+                    <p className="text-sm text-muted-foreground">
+                      Por: Ana Torres
+                    </p>
+                    <p className="text-sm text-muted-foreground line-clamp-2">
+                      Plan de capacitación para mejorar habilidades técnicas...
+                    </p>
+                  </div>
+                  <div className="flex items-center gap-2 mt-2">
+                    <Button size="sm" variant="outline">
+                      Aprobar
+                    </Button>
+                    <Button size="sm" variant="outline">
+                      Solicitar Cambios
+                    </Button>
+                  </div>
+                </div>
+              </div>
+            </>
+          ) : (
+            <div className="grid md:grid-cols-2 lg:grid-cols-3 gap-4">
+              {teamGoalsToReview.map(goal => {
+                const goalOwner = useOrganizationStore.getState().users.find(u => u.id === goal.ownerUserId);
+                
+                return (
+                  <div key={goal.id} className="space-y-2 p-4 rounded-lg border bg-orange-50 dark:bg-orange-950/20">
+                    <div className="flex items-start justify-between">
+                      <div className="flex-1 min-w-0">
+                        <h4 className="font-medium truncate">{goal.title}</h4>
+                        <p className="text-sm text-muted-foreground">
+                          Por: {goalOwner?.name}
+                        </p>
+                        <p className="text-sm text-muted-foreground line-clamp-2">
+                          {goal.description}
+                        </p>
+                      </div>
+                      <Badge variant="outline" className="ml-2 bg-orange-100 text-orange-800 dark:bg-orange-900 dark:text-orange-200">
+                        <Clock className="w-3 h-3 mr-1" />
+                        En Revisión
+                      </Badge>
+                    </div>
+                    <div className="flex items-center gap-2">
+                      <Button size="sm" variant="outline">
+                        Aprobar
+                      </Button>
+                      <Button size="sm" variant="outline">
+                        Solicitar Cambios
+                      </Button>
+                    </div>
+                  </div>
+                );
+              })}
+            </div>
+          )}
+          {teamGoalsToReview.length > 6 && (
+            <Button asChild variant="outline" className="w-full">
+              <Link to="/goals?filter=team-review">Ver todos los objetivos pendientes</Link>
+            </Button>
+          )}
+        </CardContent>
+      </Card>
 
       {/* SMART Score Breakdown */}
       {userGoals.length > 0 && (

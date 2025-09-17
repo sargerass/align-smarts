@@ -23,9 +23,6 @@ import type { Goal, GoalMetric, SmartFeedback, ParentGoalAlignment } from '@/typ
 const goalSchema = z.object({
   title: z.string().min(5, 'El título debe tener al menos 5 caracteres'),
   description: z.string().min(10, 'La descripción debe tener al menos 10 caracteres'),
-  period: z.enum(['ANUAL', 'TRIMESTRAL', 'MENSUAL']),
-  startDate: z.string().min(1, 'Fecha de inicio requerida'),
-  endDate: z.string().min(1, 'Fecha de fin requerida'),
 });
 
 type FormData = z.infer<typeof goalSchema>;
@@ -49,9 +46,6 @@ export default function CreateGoal() {
     defaultValues: {
       title: '',
       description: '',
-      period: 'TRIMESTRAL',
-      startDate: '',
-      endDate: '',
     },
   });
 
@@ -86,9 +80,9 @@ export default function CreateGoal() {
           title: value.title || '',
           description: value.description || '',
           ownerUserId: currentUser!.id,
-          period: value.period || 'TRIMESTRAL',
-          startDate: value.startDate || new Date().toISOString(),
-          endDate: value.endDate || new Date(Date.now() + 90 * 24 * 60 * 60 * 1000).toISOString(),
+          period: 'TRIMESTRAL',
+          startDate: new Date().toISOString(),
+          endDate: new Date(Date.now() + 90 * 24 * 60 * 60 * 1000).toISOString(),
           metrics: metrics.filter(m => m.name.trim() !== ''),
           tags: selectedTags,
           parentGoalAlignments: parentAlignments,
@@ -165,9 +159,9 @@ export default function CreateGoal() {
       title: data.title,
       description: data.description,
       ownerUserId: currentUser.id,
-      period: data.period,
-      startDate: data.startDate,
-      endDate: data.endDate,
+      period: 'TRIMESTRAL',
+      startDate: new Date().toISOString(),
+      endDate: new Date(Date.now() + 90 * 24 * 60 * 60 * 1000).toISOString(),
       metrics: validMetrics,
       tags: selectedTags,
       parentGoalAlignments: parentAlignments.filter(a => a.parentGoalId),
@@ -253,58 +247,6 @@ export default function CreateGoal() {
                     )}
                   />
 
-                  <div className="grid sm:grid-cols-3 gap-4">
-                    <FormField
-                      control={form.control}
-                      name="period"
-                      render={({ field }) => (
-                        <FormItem>
-                          <FormLabel>Período</FormLabel>
-                          <FormControl>
-                            <Select value={field.value} onValueChange={field.onChange}>
-                              <SelectTrigger>
-                                <SelectValue />
-                              </SelectTrigger>
-                              <SelectContent>
-                                <SelectItem value="MENSUAL">Mensual</SelectItem>
-                                <SelectItem value="TRIMESTRAL">Trimestral</SelectItem>
-                                <SelectItem value="ANUAL">Anual</SelectItem>
-                              </SelectContent>
-                            </Select>
-                          </FormControl>
-                          <FormMessage />
-                        </FormItem>
-                      )}
-                    />
-
-                    <FormField
-                      control={form.control}
-                      name="startDate"
-                      render={({ field }) => (
-                        <FormItem>
-                          <FormLabel>Fecha de inicio</FormLabel>
-                          <FormControl>
-                            <Input type="date" {...field} />
-                          </FormControl>
-                          <FormMessage />
-                        </FormItem>
-                      )}
-                    />
-
-                    <FormField
-                      control={form.control}
-                      name="endDate"
-                      render={({ field }) => (
-                        <FormItem>
-                          <FormLabel>Fecha de fin</FormLabel>
-                          <FormControl>
-                            <Input type="date" {...field} />
-                          </FormControl>
-                          <FormMessage />
-                        </FormItem>
-                      )}
-                    />
-                  </div>
                 </CardContent>
               </Card>
 
@@ -318,7 +260,6 @@ export default function CreateGoal() {
                       variant="outline" 
                       size="sm" 
                       onClick={addParentAlignment}
-                      disabled={parentGoals.length === 0}
                     >
                       <Plus className="w-4 h-4" />
                       Agregar Objetivo Padre
@@ -329,10 +270,15 @@ export default function CreateGoal() {
                   </CardDescription>
                 </CardHeader>
                 <CardContent className="space-y-4">
-                  {parentGoals.length === 0 ? (
+                  {parentAlignments.length === 0 && parentGoals.length === 0 ? (
                     <div className="text-center py-8 text-muted-foreground">
                       <AlertCircle className="w-12 h-12 mx-auto mb-3 opacity-50" />
                       <p>No hay objetivos superiores disponibles para alineación</p>
+                      <p className="text-sm">Puedes agregar la sección de todas formas para definir la estructura</p>
+                    </div>
+                  ) : parentAlignments.length === 0 ? (
+                    <div className="text-center py-4 text-muted-foreground">
+                      <p>Haz clic en "Agregar Objetivo Padre" para vincular con objetivos superiores</p>
                     </div>
                   ) : (
                     <>
@@ -354,21 +300,27 @@ export default function CreateGoal() {
                             <div className="space-y-3">
                               <div>
                                 <label className="text-sm font-medium">Seleccionar Objetivo (Borrador)</label>
-                                <Select 
-                                  value={alignment.parentGoalId} 
-                                  onValueChange={(value) => updateParentAlignment(index, 'parentGoalId', value)}
-                                >
-                                  <SelectTrigger>
-                                    <SelectValue placeholder="Seleccionar objetivo padre..." />
-                                  </SelectTrigger>
-                                  <SelectContent>
-                                    {parentGoals.map(goal => (
-                                      <SelectItem key={goal.id} value={goal.id}>
-                                        {goal.title}
-                                      </SelectItem>
-                                    ))}
-                                  </SelectContent>
-                                </Select>
+                                {parentGoals.length > 0 ? (
+                                  <Select 
+                                    value={alignment.parentGoalId} 
+                                    onValueChange={(value) => updateParentAlignment(index, 'parentGoalId', value)}
+                                  >
+                                    <SelectTrigger>
+                                      <SelectValue placeholder="Seleccionar objetivo padre..." />
+                                    </SelectTrigger>
+                                    <SelectContent>
+                                      {parentGoals.map(goal => (
+                                        <SelectItem key={goal.id} value={goal.id}>
+                                          {goal.title}
+                                        </SelectItem>
+                                      ))}
+                                    </SelectContent>
+                                  </Select>
+                                ) : (
+                                  <div className="p-3 border rounded-md bg-muted text-sm text-muted-foreground">
+                                    No hay objetivos superiores disponibles actualmente
+                                  </div>
+                                )}
                               </div>
                               
                               <div>
