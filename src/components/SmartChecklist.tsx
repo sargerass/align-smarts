@@ -1,6 +1,9 @@
 import { Card, CardContent, CardHeader, CardTitle } from '@/components/ui/card';
 import { Badge } from '@/components/ui/badge';
 import { Progress } from '@/components/ui/progress';
+import { Button } from '@/components/ui/button';
+import { Copy, CheckCircle2, AlertCircle } from 'lucide-react';
+import { useToast } from '@/hooks/use-toast';
 import type { SmartFeedback, SMARTCriteria } from '@/types';
 
 interface SmartChecklistProps {
@@ -34,6 +37,24 @@ const getOverallColor = (grade: string) => {
 };
 
 export function SmartChecklist({ feedback, isLoading }: SmartChecklistProps) {
+  const { toast } = useToast();
+
+  const copyToClipboard = async (text: string, label: string) => {
+    try {
+      await navigator.clipboard.writeText(text);
+      toast({
+        title: "Copiado al portapapeles",
+        description: `${label} copiado exitosamente`,
+      });
+    } catch (err) {
+      toast({
+        title: "Error al copiar",
+        description: "No se pudo copiar al portapapeles",
+        variant: "destructive",
+      });
+    }
+  };
+
   if (isLoading) {
     return (
       <Card className="w-full">
@@ -83,26 +104,72 @@ export function SmartChecklist({ feedback, isLoading }: SmartChecklistProps) {
         <CardHeader>
           <CardTitle>Resumen del objetivo</CardTitle>
         </CardHeader>
-        <CardContent className="space-y-4">
-          <h4 className='font-bold mb-2'>
-            Feedback
-          </h4>
-          <div className='  bg-primary/5 p-2'>
-            El objetivo “Mejorar la satisfacción del cliente este año” no está bien definido porque es demasiado amplio y genérico: no especifica en qué aspecto se quiere mejorar, carece de un indicador concreto para medir el avance, no establece un nivel de mejora alcanzable ni explica cómo se relaciona con los objetivos estratégicos, y además usa un plazo ambiguo (“este año”) que no permite hacer seguimiento claro.
+        <CardContent className="space-y-6">
+          {/* AI Feedback Section */}
+          <div className="space-y-4">
+            <div className="flex items-center gap-2 mb-3">
+              <div className="p-2 rounded-full bg-primary/10">
+                <AlertCircle className="w-4 h-4 text-primary" />
+              </div>
+              <h4 className="font-semibold text-foreground">Feedback de IA</h4>
+            </div>
+            <div className="relative bg-gradient-to-br from-primary/5 to-primary/10 border border-primary/20 rounded-lg p-4">
+              <div className="text-sm text-muted-foreground leading-relaxed">
+                El objetivo "Mejorar la satisfacción del cliente este año" no está bien definido porque es demasiado amplio y genérico: no especifica en qué aspecto se quiere mejorar, carece de un indicador concreto para medir el avance, no establece un nivel de mejora alcanzable ni explica cómo se relaciona con los objetivos estratégicos, y además usa un plazo ambiguo ("este año") que no permite hacer seguimiento claro.
+              </div>
+            </div>
           </div>
-          <div>
-            <h4 className='font-bold mb-2'>
-              Objetivo
-            </h4>
-            <p className=' mb-4'>
-              Aumentar en 15 puntos el índice de satisfacción del cliente (NPS) en el área de soporte técnico, alcanzando un puntaje mínimo de 75 antes del 31 de diciembre de 2025.
-            </p>
-            <h4 className='font-bold mb-2'>
-              Descripción
-            </h4>
-            <p className=''>
-              Este objetivo busca mejorar la experiencia del cliente en el canal de soporte técnico, enfocándonos en reducir el tiempo promedio de resolución de tickets de 48h a 24h y capacitando al equipo de atención en gestión de reclamos. Con estas acciones, buscamos elevar el Net Promoter Score (NPS) y, a su vez, incrementar la retención de clientes en un 10% hacia el cierre del año.
-            </p>
+
+          {/* Improved Goal Section */}
+          <div className="space-y-4">
+            <div className="flex items-center gap-2 mb-3">
+              <div className="p-2 rounded-full bg-success/10">
+                <CheckCircle2 className="w-4 h-4 text-success" />
+              </div>
+              <h4 className="font-semibold text-foreground">Objetivo Mejorado</h4>
+              <Button
+                variant="ghost"
+                size="sm"
+                onClick={() => copyToClipboard(
+                  "Aumentar en 15 puntos el índice de satisfacción del cliente (NPS) en el área de soporte técnico, alcanzando un puntaje mínimo de 75 antes del 31 de diciembre de 2025.",
+                  "Objetivo"
+                )}
+                className="ml-auto h-8 w-8 p-0 hover:bg-success/10"
+              >
+                <Copy className="w-3 h-3" />
+              </Button>
+            </div>
+            <div className="bg-gradient-to-br from-success/5 to-success/10 border border-success/20 rounded-lg p-4">
+              <p className="text-sm text-foreground leading-relaxed">
+                Aumentar en 15 puntos el índice de satisfacción del cliente (NPS) en el área de soporte técnico, alcanzando un puntaje mínimo de 75 antes del 31 de diciembre de 2025.
+              </p>
+            </div>
+          </div>
+
+          {/* Improved Description Section */}
+          <div className="space-y-4">
+            <div className="flex items-center gap-2 mb-3">
+              <div className="p-2 rounded-full bg-blue-500/10">
+                <CheckCircle2 className="w-4 h-4 text-blue-500" />
+              </div>
+              <h4 className="font-semibold text-foreground">Descripción Mejorada</h4>
+              <Button
+                variant="ghost"
+                size="sm"
+                onClick={() => copyToClipboard(
+                  "Este objetivo busca mejorar la experiencia del cliente en el canal de soporte técnico, enfocándonos en reducir el tiempo promedio de resolución de tickets de 48h a 24h y capacitando al equipo de atención en gestión de reclamos. Con estas acciones, buscamos elevar el Net Promoter Score (NPS) y, a su vez, incrementar la retención de clientes en un 10% hacia el cierre del año.",
+                  "Descripción"
+                )}
+                className="ml-auto h-8 w-8 p-0 hover:bg-blue-500/10"
+              >
+                <Copy className="w-3 h-3" />
+              </Button>
+            </div>
+            <div className="bg-gradient-to-br from-blue-500/5 to-blue-500/10 border border-blue-500/20 rounded-lg p-4">
+              <p className="text-sm text-foreground leading-relaxed">
+                Este objetivo busca mejorar la experiencia del cliente en el canal de soporte técnico, enfocándonos en reducir el tiempo promedio de resolución de tickets de 48h a 24h y capacitando al equipo de atención en gestión de reclamos. Con estas acciones, buscamos elevar el Net Promoter Score (NPS) y, a su vez, incrementar la retención de clientes en un 10% hacia el cierre del año.
+              </p>
+            </div>
           </div>
         </CardContent>
       </Card>
