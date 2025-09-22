@@ -237,7 +237,7 @@ export const seedGoals: Goal[] = [
         status: 'ON_TRACK',
         achievements: [
           'Completado estudio de mercado para LATAM',
-          'Establecido equipo de expansión internacional',  
+          'Establecido equipo de expansión internacional',
           'Incremento 8% en ingresos Q1 vs objetivo 6.25%'
         ],
         challenges: [
@@ -333,8 +333,6 @@ export const seedGoals: Goal[] = [
 ];
 
 export const commonTags = [
-  'ingresos', 'retencion', 'adquisicion', 'nps', 'tiempo_entrega',
-  'defectos', 'velocidad', 'costos', 'productividad', 'satisfaccion',
-  'crecimiento', 'expansion', 'automatizacion', 'procesos', 'clientes',
-  'ventas', 'mercados', 'productos', 'desarrollo', 'digitalizacion'
+  'Compartir con mi equipo',
+  'Compartir con mi líder'
 ];

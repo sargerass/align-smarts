@@ -217,7 +217,7 @@ export default function CreateGoal() {
                     name="title"
                     render={({ field }) => (
                       <FormItem>
-                        <FormLabel>Título del objetivo</FormLabel>
+                        <FormLabel>Objetivo </FormLabel>
                         <FormControl>
                           <Input
                             placeholder="Tu título relaciona tu objetivo para que luzca y se vea como un Borrador."
@@ -234,7 +234,7 @@ export default function CreateGoal() {
                     name="description"
                     render={({ field }) => (
                       <FormItem>
-                        <FormLabel>Objetivo</FormLabel>
+                        <FormLabel>Descripción</FormLabel>
                         <FormControl>
                           <Textarea
                             placeholder="Explícanos de tu idea completamente así te ayudamos con la vinculación, características y funcionalidades que no hemos visto anteriormente..."
@@ -393,6 +393,34 @@ export default function CreateGoal() {
                       </div>
                     </div>
                   ))}
+                </CardContent>
+              </Card>
+
+              {/* Tags */}
+              <Card>
+                <CardContent className="">
+                  <div>
+
+                    <div className="flex flex-col gap-4 pt-6">
+                      {commonTags.map((tag) => (
+                        <div key={tag}>
+                          <label
+                            className="flex items-center gap-2 p-2 cursor-pointer hover:bg-muted"
+                          >
+                            <input
+                              type="checkbox"
+                              aria-label={`Seleccionar ${tag}`}
+                              checked={selectedTags.includes(tag)}
+                              onChange={() => toggleTag(tag)}
+                              className="w-4 h-4 text-primary"
+                            />
+                            <span className="text-sm">{tag}</span>
+                          </label>
+                        </div>
+                      ))}
+                    </div>
+
+                  </div>
                 </CardContent>
               </Card>
 

@@ -161,10 +161,13 @@ export default function Dashboard() {
                         Desarrollar estrategias de venta para alcanzar el objetivo trimestral...
                       </p>
                     </div>
-                    <Badge variant="outline" className="ml-2">
-                      <CheckCircle className="w-4 h-4" />
-                      ACTIVE
-                    </Badge>
+                    <div>
+                      <Badge variant="outline" className="ml-2">
+                        <CheckCircle className="w-4 h-4" />
+                        ACTIVE
+                      </Badge>
+
+                    </div>
                   </div>
                   <div className="flex items-center gap-4 text-sm">
                     <div className="flex items-center gap-1">
@@ -192,10 +195,37 @@ export default function Dashboard() {
                           {goal.description}
                         </p>
                       </div>
-                      <Badge variant="outline" className={`ml-2 ${getStatusColor(goal.status)}`}>
-                        {getStatusIcon(goal.status)}
-                        {goal.status}
-                      </Badge>
+                      <div>
+
+                        <div className='flex justify-end items-center flex-col gap-2'>
+                          <Badge variant="outline" className={`ml-2 ${getStatusColor(goal.status)}`}>
+                            {getStatusIcon(goal.status)} {goal.status}
+                          </Badge>
+                          <div className="flex items-center">
+                            <button
+                              type="button"
+                              aria-label="Estado del objetivo"
+                              className="w-6 h-6 rounded-full border-2 focus:outline-none"
+                              data-state="0"
+                              onClick={(e) => {
+                                const el = e.currentTarget as HTMLButtonElement;
+                                const s = el.getAttribute('data-state') || '0';
+                                const next = s === '0' ? '1' : s === '1' ? '2' : '0';
+                                el.setAttribute('data-state', next);
+                                const colors: Record<string, string> = {
+                                  '0': '#16a34a', // verde
+                                  '1': '#f59e0b', // amarillo
+                                  '2': '#ef4444', // rojo
+                                };
+                                el.style.backgroundColor = colors[next];
+                              }}
+                              style={{ backgroundColor: '#16a34a' }} // inicial: verde
+                            />
+                          </div>
+                        </div>
+                      </div>
+
+
                     </div>
                     <div className="flex items-center gap-4 text-sm">
                       <div className="flex items-center gap-1">
@@ -296,7 +326,7 @@ export default function Dashboard() {
             <br />
             <br />
             <div className='flex'>
-              <input type="checkbox" id='show-pending' className='mr-2' /> <label htmlFor="show-pending">
+              <input type="checkbox" id='show-pending' className='mr-2' /> <label htmlFor="show-pending" >
                 Mostrar solo objetivos pendientes de revisión
               </label>
             </div>
