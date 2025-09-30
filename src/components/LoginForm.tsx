@@ -19,7 +19,7 @@ export function LoginForm() {
     if (!email.trim()) return;
 
     setIsLoading(true);
-    
+
     try {
       const success = await login(email);
       if (!success) {
@@ -56,8 +56,8 @@ export function LoginForm() {
                 onChange={(e) => setEmail(e.target.value)}
                 required
               />
-              <Button 
-                type="submit" 
+              <Button
+                type="submit"
                 className="w-full"
                 disabled={isLoading}
               >
@@ -65,7 +65,7 @@ export function LoginForm() {
                 Ingresar
               </Button>
             </form>
-            
+
             <div className="space-y-2">
               <p className="text-sm text-muted-foreground text-center">Usuarios demo:</p>
               <div className="grid grid-cols-2 gap-2">
@@ -78,7 +78,7 @@ export function LoginForm() {
                     disabled={isLoading}
                     className="text-xs"
                   >
-                    {user.role}
+                    {user.label || user.role}
                   </Button>
                 ))}
               </div>

@@ -70,6 +70,7 @@ export const seedUsers: User[] = [
     name: 'Carlos Rodriguez',
     email: 'admin@aceleracorp.com',
     role: 'ADMIN',
+    label: 'Admin',
     orgUnitId: 'org-1',
   },
   // C-Level
@@ -77,37 +78,17 @@ export const seedUsers: User[] = [
     id: 'user-2',
     name: 'María González',
     email: 'maria.gonzalez@aceleracorp.com',
-    role: 'C_LEVEL',
-    orgUnitId: 'org-2',
+    role: 'DIRECTOR',
+    label: 'Director',
+    orgUnitId: 'org-4',
   },
-  {
-    id: 'user-3',
-    name: 'Roberto Silva',
-    email: 'roberto.silva@aceleracorp.com',
-    role: 'C_LEVEL',
-    orgUnitId: 'org-2',
-  },
-  // VPs
   {
     id: 'user-4',
     name: 'Ana Martínez',
     email: 'ana.martinez@aceleracorp.com',
     role: 'VP',
+    label: 'Gerente',
     orgUnitId: 'org-3',
-  },
-  {
-    id: 'user-5',
-    name: 'Diego López',
-    email: 'diego.lopez@aceleracorp.com',
-    role: 'VP',
-    orgUnitId: 'org-6',
-  },
-  {
-    id: 'user-6',
-    name: 'Patricia Moreno',
-    email: 'patricia.moreno@aceleracorp.com',
-    role: 'VP',
-    orgUnitId: 'org-9',
   },
   // Team Leaders & Managers
   {
@@ -115,6 +96,7 @@ export const seedUsers: User[] = [
     name: 'Luis Herrera',
     email: 'luis.herrera@aceleracorp.com',
     role: 'LIDER_EQUIPO',
+    label: 'Líder de equipo',
     orgUnitId: 'org-4',
   },
   {
@@ -187,7 +169,7 @@ export const seedGoals: Goal[] = [
   // C-Level Goals (Annual)
   {
     id: 'goal-1',
-    orgUnitId: 'org-2',
+    orgUnitId: 'org-4',
     title: 'Incrementar ingresos anuales en un 25%',
     description: 'Alcanzar 125M USD en ingresos totales mediante la expansión de mercados existentes y la introducción de nuevas líneas de productos para el año fiscal 2024.',
     ownerUserId: 'user-2',
@@ -217,7 +199,7 @@ export const seedGoals: Goal[] = [
       },
       {
         id: 'plan-2',
-        goalId: 'goal-1',
+        goalId: 'goal-4',
         title: 'Lanzamiento línea premium',
         description: 'Desarrollar y lanzar nueva línea de productos premium con margen 40% superior',
         dueDate: '2024-08-31T23:59:59.999Z',
@@ -257,10 +239,10 @@ export const seedGoals: Goal[] = [
   },
   {
     id: 'goal-2',
-    orgUnitId: 'org-2',
+    orgUnitId: 'org-4',
     title: 'Mejorar satisfacción del cliente a 90% NPS',
     description: 'Implementar programa de excelencia en servicio al cliente para alcanzar un Net Promoter Score de 90 puntos, mejorando la retención y recomendaciones.',
-    ownerUserId: 'user-3',
+    ownerUserId: 'user-2',
     period: 'ANUAL',
     startDate: '2024-01-01T00:00:00.000Z',
     endDate: '2024-12-31T23:59:59.999Z',
@@ -294,10 +276,48 @@ export const seedGoals: Goal[] = [
   // VP Goals aligned to C-Level
   {
     id: 'goal-4',
-    orgUnitId: 'org-3',
-    title: 'Aumentar ventas en mercados existentes por 30%',
+    orgUnitId: 'org-1',
+    title: 'Incrementar ingresos anuales en un 25%',
     description: 'Incrementar ventas en territorios Norte y Sur mediante estrategias de penetración de mercado y cross-selling para contribuir al objetivo de crecimiento corporativo.',
-    ownerUserId: 'user-4',
+    ownerUserId: 'user-1',
+    period: 'ANUAL',
+    startDate: '2024-01-01T00:00:00.000Z',
+    endDate: '2024-12-31T23:59:59.999Z',
+    metrics: [
+      { name: 'Ventas totales', baseline: 50, target: 65, unit: 'millones USD' },
+      { name: 'Crecimiento ventas', baseline: 0, target: 30, unit: '%' }
+    ],
+    parentGoalId: 'goal-1',
+    tags: ['ingresos', 'ventas', 'crecimiento', 'mercados'],
+    status: 'ACTIVE',
+    createdAt: '2024-01-01T00:00:00.000Z',
+    updatedAt: '2024-01-01T00:00:00.000Z',
+  },
+  {
+    id: 'goal-40',
+    orgUnitId: 'org-3',
+    title: 'Mejorar el margen operativo en 5 puntos porcentuales',
+    description: 'Reducir costos de producción y distribución en un 10% mediante optimización de la cadena de suministro y eficiencia energética, alcanzando un margen operativo del 18% para el año fiscal 2024.',
+    ownerUserId: 'user-1',
+    period: 'ANUAL',
+    startDate: '2024-01-01T00:00:00.000Z',
+    endDate: '2024-12-31T23:59:59.999Z',
+    metrics: [
+      { name: 'Ventas totales', baseline: 50, target: 65, unit: 'millones USD' },
+      { name: 'Crecimiento ventas', baseline: 0, target: 30, unit: '%' }
+    ],
+    parentGoalId: 'goal-1',
+    tags: ['ingresos', 'ventas', 'crecimiento', 'mercados'],
+    status: 'ACTIVE',
+    createdAt: '2024-01-01T00:00:00.000Z',
+    updatedAt: '2024-01-01T00:00:00.000Z',
+  },
+  {
+    id: 'goal-41',
+    orgUnitId: 'org-3',
+    title: 'Lograr que el 40% del portafolio provenga de productos sostenibles',
+    description: 'Asegurar que para el año fiscal 2024 al menos el 40% de las ventas provengan de productos con envases reciclables o retornables, fortaleciendo la percepción de la marca como líder en sostenibilidad dentro de la industria de bebidas.',
+    ownerUserId: 'user-1',
     period: 'ANUAL',
     startDate: '2024-01-01T00:00:00.000Z',
     endDate: '2024-12-31T23:59:59.999Z',
@@ -313,10 +333,10 @@ export const seedGoals: Goal[] = [
   },
   {
     id: 'goal-5',
-    orgUnitId: 'org-6',
+    orgUnitId: 'org-5',
     title: 'Acelerar desarrollo de productos digitales en 40%',
     description: 'Implementar metodologías ágiles y herramientas de automatización para reducir time-to-market de nuevos productos digitales en 40%.',
-    ownerUserId: 'user-5',
+    ownerUserId: 'user-2',
     period: 'ANUAL',
     startDate: '2024-01-01T00:00:00.000Z',
     endDate: '2024-12-31T23:59:59.999Z',

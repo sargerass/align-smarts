@@ -10,7 +10,7 @@ export type OrgUnit = {
 };
 
 // User management types
-export type UserRole = "ADMIN" | "C_LEVEL" | "VP" | "GERENTE" | "LIDER_EQUIPO" | "COLABORADOR";
+export type UserRole = "ADMIN" | "DIRECTOR" | "VP" | "GERENTE" | "LIDER_EQUIPO" | "COLABORADOR";
 
 export type User = {
   id: string;
@@ -18,6 +18,7 @@ export type User = {
   email: string;
   role: UserRole;
   orgUnitId: string;
+  label?: string;
 };
 
 // Goal management types

@@ -149,27 +149,9 @@ export default function Dashboard() {
                   <TrendingUp className="w-12 h-12 mx-auto mb-3 opacity-50" />
                   <p>No hay objetivos superiores definidos</p>
                 </div>
-                {/* Sample data to show layout */}
-                <div className="space-y-2 p-3 rounded-lg border bg-accent/10 opacity-50">
-                  <div className="flex items-start justify-between">
-                    <div className="flex-1 min-w-0">
-                      <h4 className="font-medium">Expansión de mercado regional</h4>
-                      <p className="text-sm text-muted-foreground line-clamp-2">
-                        Alcanzar nuevos mercados en la región para aumentar participación...
-                      </p>
-                    </div>
-                    <Badge variant="outline" className="ml-2">
-                      TRIMESTRAL
-                    </Badge>
-                  </div>
-                  <div className="flex flex-wrap gap-1">
-                    <Badge variant="secondary" className="text-xs">Crecimiento</Badge>
-                    <Badge variant="secondary" className="text-xs">Ventas</Badge>
-                  </div>
-                </div>
               </>
             ) : (
-              parentGoals.slice(0, 3).map(goal => (
+              [...parentGoals].slice(0, 3).map(goal => (
                 <div key={goal.id} className="space-y-2 p-3 rounded-lg border bg-accent/10">
                   <div className="flex items-start justify-between">
                     <div className="flex-1 min-w-0">
@@ -341,7 +323,7 @@ export default function Dashboard() {
             <>
               {/* Sample data to show layout */}
               <div className="grid md:grid-cols-2 lg:grid-cols-3 gap-4">
-                <div className="space-y-2 p-4 rounded-lg border bg-orange-50 dark:bg-orange-950/20">
+                <div className="space-y-2 p-4 rounded-lg border  dark:bg-orange-950/20">
                   <div className="flex items-start justify-between">
                     <div className="flex-1 min-w-0">
                       <h4 className="font-medium">Mejorar satisfacción del cliente</h4>
@@ -367,7 +349,7 @@ export default function Dashboard() {
                   </div>
                 </div>
 
-                <div className="space-y-2 p-4 rounded-lg border bg-green-50 dark:bg-green-950/20">
+                <div className="space-y-2 p-4 rounded-lg border  dark:bg-green-950/20">
                   <div className="flex items-start justify-between">
                     <div className="flex-1 min-w-0">
                       <h4 className="font-medium">Reducir tiempo de respuesta</h4>
@@ -390,7 +372,7 @@ export default function Dashboard() {
                   </div>
                 </div>
 
-                <div className="space-y-2 p-4 rounded-lg border bg-blue-50 dark:bg-blue-950/20">
+                <div className="space-y-2 p-4 rounded-lg border  dark:bg-blue-950/20">
                   <div className="flex-1 min-w-0">
                     <h4 className="font-medium">Capacitación del equipo</h4>
                     <p className="text-sm text-muted-foreground">
@@ -417,7 +399,7 @@ export default function Dashboard() {
                 const goalOwner = useOrganizationStore.getState().users.find(u => u.id === goal.ownerUserId);
 
                 return (
-                  <div key={goal.id} className="space-y-2 p-4 rounded-lg border bg-orange-50 dark:bg-orange-950/20">
+                  <div key={goal.id} className="space-y-2 p-4 rounded-lg border  dark:bg-orange-950/20">
                     <div className="flex items-start justify-between">
                       <div className="flex-1 min-w-0">
                         <h4 className="font-medium truncate">{goal.title}</h4>

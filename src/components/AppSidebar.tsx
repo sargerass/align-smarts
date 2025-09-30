@@ -2,11 +2,11 @@ import { Link, useLocation } from 'react-router-dom';
 import { Badge } from '@/components/ui/badge';
 import { Avatar, AvatarFallback } from '@/components/ui/avatar';
 import { Button } from '@/components/ui/button';
-import { 
-  Home, 
-  Target, 
-  Network, 
-  TrendingUp, 
+import {
+  Home,
+  Target,
+  Network,
+  TrendingUp,
   Settings,
   LogOut,
   ChevronUp,
@@ -36,7 +36,7 @@ export function AppSidebar() {
   const location = useLocation();
   const { currentUser, logout } = useAuthStore();
   const { state } = useSidebar();
-  
+
   const navItems = [
     { path: '/', label: 'Dashboard', icon: Home },
     { path: '/goals', label: 'Objetivos', icon: Target },
@@ -60,7 +60,6 @@ export function AppSidebar() {
           {!isCollapsed && (
             <div className="min-w-0">
               <h1 className="font-bold text-base text-foreground truncate">Acelera</h1>
-              <p className="text-xs text-muted-foreground truncate">guillermo.asto@acelera.io</p>
             </div>
           )}
         </Link>
@@ -73,11 +72,11 @@ export function AppSidebar() {
               {navItems.map((item) => {
                 const Icon = item.icon;
                 const isActive = location.pathname === item.path;
-                
+
                 return (
                   <SidebarMenuItem key={item.path}>
-                    <SidebarMenuButton 
-                      asChild 
+                    <SidebarMenuButton
+                      asChild
                       isActive={isActive}
                       tooltip={isCollapsed ? item.label : undefined}
                     >
