@@ -130,7 +130,70 @@ export default function Dashboard() {
       </div>
 
 
-      <div className="grid lg:grid-cols-2 gap-6">
+      <div className="grid lg:grid-cols-1 gap-6">
+        {/* Parent Goals */}
+        <Card>
+          <CardHeader>
+            <CardTitle className="flex items-center gap-2">
+              <TrendingUp className="w-5 h-5" />
+              Objetivos Superiores
+            </CardTitle>
+            <CardDescription>
+              Objetivos de {parentOrgUnit?.name || 'la organización'}
+            </CardDescription>
+          </CardHeader>
+          <CardContent className="space-y-4">
+            {parentGoals.length === 0 ? (
+              <>
+                <div className="text-center py-8 text-muted-foreground">
+                  <TrendingUp className="w-12 h-12 mx-auto mb-3 opacity-50" />
+                  <p>No hay objetivos superiores definidos</p>
+                </div>
+                {/* Sample data to show layout */}
+                <div className="space-y-2 p-3 rounded-lg border bg-accent/10 opacity-50">
+                  <div className="flex items-start justify-between">
+                    <div className="flex-1 min-w-0">
+                      <h4 className="font-medium">Expansión de mercado regional</h4>
+                      <p className="text-sm text-muted-foreground line-clamp-2">
+                        Alcanzar nuevos mercados en la región para aumentar participación...
+                      </p>
+                    </div>
+                    <Badge variant="outline" className="ml-2">
+                      TRIMESTRAL
+                    </Badge>
+                  </div>
+                  <div className="flex flex-wrap gap-1">
+                    <Badge variant="secondary" className="text-xs">Crecimiento</Badge>
+                    <Badge variant="secondary" className="text-xs">Ventas</Badge>
+                  </div>
+                </div>
+              </>
+            ) : (
+              parentGoals.slice(0, 3).map(goal => (
+                <div key={goal.id} className="space-y-2 p-3 rounded-lg border bg-accent/10">
+                  <div className="flex items-start justify-between">
+                    <div className="flex-1 min-w-0">
+                      <h4 className="font-medium truncate">{goal.title}</h4>
+                      <p className="text-sm text-muted-foreground line-clamp-2">
+                        {goal.description}
+                      </p>
+                    </div>
+                    <Badge variant="outline" className="ml-2">
+                      {goal.period}
+                    </Badge>
+                  </div>
+                  <div className="flex flex-wrap gap-1">
+                    {goal.tags?.slice(0, 3).map(tag => (
+                      <Badge key={tag} variant="secondary" className="text-xs">
+                        {tag}
+                      </Badge>
+                    ))}
+                  </div>
+                </div>
+              ))
+            )}
+          </CardContent>
+        </Card>
         {/* User's Goals */}
         <Card>
           <CardHeader>
@@ -249,69 +312,7 @@ export default function Dashboard() {
           </CardContent>
         </Card>
 
-        {/* Parent Goals */}
-        <Card>
-          <CardHeader>
-            <CardTitle className="flex items-center gap-2">
-              <TrendingUp className="w-5 h-5" />
-              Objetivos Superiores
-            </CardTitle>
-            <CardDescription>
-              Objetivos de {parentOrgUnit?.name || 'la organización'}
-            </CardDescription>
-          </CardHeader>
-          <CardContent className="space-y-4">
-            {parentGoals.length === 0 ? (
-              <>
-                <div className="text-center py-8 text-muted-foreground">
-                  <TrendingUp className="w-12 h-12 mx-auto mb-3 opacity-50" />
-                  <p>No hay objetivos superiores definidos</p>
-                </div>
-                {/* Sample data to show layout */}
-                <div className="space-y-2 p-3 rounded-lg border bg-accent/10 opacity-50">
-                  <div className="flex items-start justify-between">
-                    <div className="flex-1 min-w-0">
-                      <h4 className="font-medium">Expansión de mercado regional</h4>
-                      <p className="text-sm text-muted-foreground line-clamp-2">
-                        Alcanzar nuevos mercados en la región para aumentar participación...
-                      </p>
-                    </div>
-                    <Badge variant="outline" className="ml-2">
-                      TRIMESTRAL
-                    </Badge>
-                  </div>
-                  <div className="flex flex-wrap gap-1">
-                    <Badge variant="secondary" className="text-xs">Crecimiento</Badge>
-                    <Badge variant="secondary" className="text-xs">Ventas</Badge>
-                  </div>
-                </div>
-              </>
-            ) : (
-              parentGoals.slice(0, 3).map(goal => (
-                <div key={goal.id} className="space-y-2 p-3 rounded-lg border bg-accent/10">
-                  <div className="flex items-start justify-between">
-                    <div className="flex-1 min-w-0">
-                      <h4 className="font-medium truncate">{goal.title}</h4>
-                      <p className="text-sm text-muted-foreground line-clamp-2">
-                        {goal.description}
-                      </p>
-                    </div>
-                    <Badge variant="outline" className="ml-2">
-                      {goal.period}
-                    </Badge>
-                  </div>
-                  <div className="flex flex-wrap gap-1">
-                    {goal.tags?.slice(0, 3).map(tag => (
-                      <Badge key={tag} variant="secondary" className="text-xs">
-                        {tag}
-                      </Badge>
-                    ))}
-                  </div>
-                </div>
-              ))
-            )}
-          </CardContent>
-        </Card>
+
       </div>
 
       {/* Team Goals Section - Full Width */}
